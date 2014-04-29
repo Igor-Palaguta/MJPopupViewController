@@ -63,6 +63,7 @@ static void * const keypath = (void*)&keypath;
 }
 
 - (void)dismissPopupViewControllerWithanimationType:(MJPopupViewAnimation)animationType
+                                         completion:(MJPopupAnimationCompletion)completion
 {
     UIView *sourceView = [self topView];
     UIView *popupView = [sourceView viewWithTag:kMJPopupViewTag];
@@ -77,11 +78,11 @@ static void * const keypath = (void*)&keypath;
         case MJPopupViewAnimationSlideLeftRight:
         case MJPopupViewAnimationSlideRightLeft:
         case MJPopupViewAnimationSlideRightRight:
-            [self slideViewOut:popupView sourceView:sourceView overlayView:overlayView withAnimationType:animationType];
+            [self slideViewOut:popupView sourceView:sourceView overlayView:overlayView withAnimationType:animationType completion: completion];
             break;
             
         default:
-            [self fadeViewOut:popupView sourceView:sourceView overlayView:overlayView];
+            [self fadeViewOut:popupView sourceView:sourceView overlayView:overlayView completion: completion];
             break;
     }
 }
@@ -185,14 +186,14 @@ static void * const keypath = (void*)&keypath;
             case MJPopupViewAnimationSlideLeftRight:
             case MJPopupViewAnimationSlideRightLeft:
             case MJPopupViewAnimationSlideRightRight:
-                [self dismissPopupViewControllerWithanimationType:dismissButton.tag];
+                [self dismissPopupViewControllerWithanimationType:dismissButton.tag completion:nil];
                 break;
             default:
-                [self dismissPopupViewControllerWithanimationType:MJPopupViewAnimationFade];
+                [self dismissPopupViewControllerWithanimationType:MJPopupViewAnimationFade completion:nil];
                 break;
         }
     } else {
-        [self dismissPopupViewControllerWithanimationType:MJPopupViewAnimationFade];
+        [self dismissPopupViewControllerWithanimationType:MJPopupViewAnimationFade completion:nil];
     }
 }
 
@@ -257,7 +258,11 @@ static void * const keypath = (void*)&keypath;
     }];
 }
 
-- (void)slideViewOut:(UIView*)popupView sourceView:(UIView*)sourceView overlayView:(UIView*)overlayView withAnimationType:(MJPopupViewAnimation)animationType
+- (void)slideViewOut:(UIView*)popupView
+          sourceView:(UIView*)sourceView
+         overlayView:(UIView*)overlayView
+   withAnimationType:(MJPopupViewAnimation)animationType
+          completion:(MJPopupAnimationCompletion)completion
 {
     // Generating Start and Stop Positions
     CGSize sourceSize = sourceView.bounds.size;
@@ -309,6 +314,10 @@ static void * const keypath = (void*)&keypath;
             ((void(^)(void))dismissed)();
             [self setDismissedCallback:nil];
         }
+        if (completion)
+        {
+            completion();
+        }
     }];
 }
 
@@ -337,7 +346,10 @@ static void * const keypath = (void*)&keypath;
     }];
 }
 
-- (void)fadeViewOut:(UIView*)popupView sourceView:(UIView*)sourceView overlayView:(UIView*)overlayView
+- (void)fadeViewOut:(UIView*)popupView
+         sourceView:(UIView*)sourceView
+        overlayView:(UIView*)overlayView
+         completion:(MJPopupAnimationCompletion)completion
 {
     [UIView animateWithDuration:kPopupModalAnimationDuration animations:^{
         [self.mj_popupViewController viewWillDisappear:NO];
@@ -354,6 +366,10 @@ static void * const keypath = (void*)&keypath;
         {
             ((void(^)(void))dismissed)();
             [self setDismissedCallback:nil];
+        }
+        if (completion)
+        {
+            completion();
         }
     }];
 }
