@@ -339,7 +339,7 @@ static void * const keypath = (void*)&keypath;
     
     [UIView animateWithDuration:kPopupModalAnimationDuration animations:^{
         [self.mj_popupViewController viewWillAppear:NO];
-        self.mj_popupBackgroundView.alpha = 0.5f;
+        self.mj_popupBackgroundView.alpha = 1.0f;
         popupView.alpha = 1.0f;
     } completion:^(BOOL finished) {
         [self.mj_popupViewController viewDidAppear:NO];
