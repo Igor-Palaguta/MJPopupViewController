@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = "MJPopupViewController"
-  s.version      = "0.5"
+  s.version      = "0.5.1"
   s.summary      = "A UIViewController Category to display a ViewController as a popup with different transition effects."
   s.homepage     = "https://github.com/martinjuhasz/MJPopupViewController"
   s.license      = { :type => 'MIT', :file => 'LICENSE.txt' }
