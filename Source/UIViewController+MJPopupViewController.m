@@ -14,9 +14,6 @@
 #define kPopupModalAnimationDuration 0.35
 #define kMJPopupViewController @"kMJPopupViewController"
 #define kMJPopupBackgroundView @"kMJPopupBackgroundView"
-#define kMJSourceViewTag 23941
-#define kMJPopupViewTag 23942
-#define kMJOverlayViewTag 23945
 
 @interface UIViewController (MJPopupViewControllerPrivate)
 - (UIView*)topView;
@@ -65,9 +62,10 @@ static void * const keypath = (void*)&keypath;
 - (void)dismissPopupViewControllerWithanimationType:(MJPopupViewAnimation)animationType
                                          completion:(MJPopupAnimationCompletion)completion
 {
-    UIView *sourceView = [self topView];
-    UIView *popupView = [sourceView viewWithTag:kMJPopupViewTag];
-    UIView *overlayView = [sourceView viewWithTag:kMJOverlayViewTag];
+    UIViewController* popupController = self.mj_popupViewController;
+    UIView* popupView = popupController.view;
+    UIView* overlayView = popupView.superview;
+    UIView *sourceView = overlayView.superview;
     
     switch (animationType) {
         case MJPopupViewAnimationSlideBottomTop:
@@ -102,13 +100,12 @@ static void * const keypath = (void*)&keypath;
 {
     [self.view endEditing: YES];
     UIView *sourceView = [self topView];
-    sourceView.tag = kMJSourceViewTag;
-    popupView.autoresizingMask = UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleLeftMargin |UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleRightMargin;
-    popupView.tag = kMJPopupViewTag;
-    
+
     // check if source view controller is not in destination
     if ([sourceView.subviews containsObject:popupView]) return;
-    
+
+    popupView.autoresizingMask = UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleLeftMargin |UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleRightMargin;
+
     // customize popupView
     popupView.layer.shadowPath = [UIBezierPath bezierPathWithRect:popupView.bounds].CGPath;
     popupView.layer.masksToBounds = YES;
@@ -121,7 +118,6 @@ static void * const keypath = (void*)&keypath;
     // Add semi overlay
     UIView *overlayView = [[UIView alloc] initWithFrame:sourceView.bounds];
     overlayView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    overlayView.tag = kMJOverlayViewTag;
     overlayView.backgroundColor = [UIColor clearColor];
     
     // BackgroundView
@@ -339,7 +335,7 @@ static void * const keypath = (void*)&keypath;
     
     [UIView animateWithDuration:kPopupModalAnimationDuration animations:^{
         [self.mj_popupViewController viewWillAppear:NO];
-        self.mj_popupBackgroundView.alpha = 0.5f;
+        self.mj_popupBackgroundView.alpha = 1.0f;
         popupView.alpha = 1.0f;
     } completion:^(BOOL finished) {
         [self.mj_popupViewController viewDidAppear:NO];
